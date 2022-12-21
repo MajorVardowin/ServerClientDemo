@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using Client.ViewModel;
 
 namespace ServerClientDemo.View
 {
@@ -10,6 +11,12 @@ namespace ServerClientDemo.View
         public MainWindow()
         {
             InitializeComponent();
+        }
+
+        private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
+        {
+            var client = new ClientViewModel();
+            client.WriteToServer();
         }
     }
 }
