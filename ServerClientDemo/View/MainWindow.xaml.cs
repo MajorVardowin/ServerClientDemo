@@ -15,7 +15,7 @@ namespace ServerClientDemo.View
 
         private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
         {
-            var client = new ClientViewModel();
+            var client = new ClientViewModel(true);
             client.WriteToServer();
         }
     }

@@ -9,8 +9,9 @@ namespace Client.ViewModel
 {
     public class ClientViewModel : INotifyPropertyChanged
     {
-        private readonly TcpClient _client;
+        private TcpClient? _client;
         private string _message = "Das wird die View";
+        private bool _canSendMessage;
 
         #region Events
 
@@ -26,14 +27,22 @@ namespace Client.ViewModel
             set => SetField(ref _message, value);
         }
 
+        public bool CanSendMessage
+        {
+            get => _canSendMessage; //TODO Check if connected
+            set => SetField(ref _canSendMessage, value);
+        }
+
         #endregion
 
-        public ClientViewModel()
-        {
-            // Erstelle eine Verbindung zum Server auf dem localhost und dem Port 13000
-            _client = new TcpClient("127.0.0.1", 13000);
 
-            Console.WriteLine("Verbindung zum Server hergestellt.");
+
+        public ClientViewModel(bool connect = false)
+        {
+            if (connect)
+            {
+                ConnectToServer();
+            }
         }
 
         public void WriteToServer()
@@ -51,8 +60,16 @@ namespace Client.ViewModel
         ~ClientViewModel()
         {
             // Schlieﬂe die Verbindung zum Server
-            _client.Close();
+            _client?.Close();
             Console.WriteLine("Verbindung zum Server beendet.");
+        }
+
+        private void ConnectToServer()
+        {
+            // Erstelle eine Verbindung zum Server auf dem localhost und dem Port 13000
+            _client = new TcpClient("127.0.0.1", 13000);
+            CanSendMessage = true;
+            Console.WriteLine("Verbindung zum Server hergestellt.");
         }
 
         protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)

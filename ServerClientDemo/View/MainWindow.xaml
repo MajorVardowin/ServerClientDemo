@@ -13,25 +13,24 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
 
-        <TextBox Grid.Row="0" Grid.Column="0" BorderBrush="Gray" BorderThickness="1"></TextBox>
         <Button Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" Margin="10,0" Click="ButtonBase_OnClick">
             <ContentControl>
                 <ContentControl.Content>Send</ContentControl.Content>
                 <ContentControl.Margin>10,0</ContentControl.Margin>
             </ContentControl>
         </Button>
-        <clientView:ClientView Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" BorderBrush="Gray" BorderThickness="1"
-                               Margin="0,5,0,0"></clientView:ClientView>
+        <clientView:ClientView Grid.Row="0" Grid.Column="0" BorderBrush="Gray" BorderThickness="1"
+                               Margin="0,5,0,0" 
+                               />
 
-        <serverView:ServerView Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" BorderBrush="Gray" BorderThickness="1"
-                               Margin="0,5,0,0"></serverView:ServerView>
+        <serverView:ServerView Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" BorderBrush="Gray" BorderThickness="1"
+                               Margin="0,5,0,0" />
 
     </Grid>
         

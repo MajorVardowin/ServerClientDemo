@@ -25,8 +25,11 @@ public class ServerViewModel : INotifyPropertyChanged
     #region Fields
 
     private readonly TcpListener _server;
-    private readonly TcpClient? _client;
+    private TcpClient? _client;
     private string _receivedMessage = "Das wird der Server";
+    private NetworkStream? _stream;
+    private readonly byte[] _messageBytes = new byte[1024];
+    private readonly int _offset = 0;
 
     #endregion
 
@@ -46,34 +49,46 @@ public class ServerViewModel : INotifyPropertyChanged
         Console.WriteLine("Server gestartet. Warten auf Verbindungen...");
 
         // Warte auf eine Verbindung vom Client
-        _server.BeginAcceptTcpClient(new AsyncCallback(WaitForMessage), _server);
+        _server.BeginAcceptTcpClient(new AsyncCallback(ConnectWithClient), _server);
 
         Console.WriteLine("Verbindung von einem Client hergestellt.");
     }
 
-    public void WaitForMessage(IAsyncResult ar)
+    public void ConnectWithClient(IAsyncResult ar)
     {
         if (ar.AsyncState == null) return;
 
         // Get the listener that handles the client request.
         TcpListener listener = (TcpListener)ar.AsyncState;
-        
-        TcpClient client = listener.AcceptTcpClient();
-        // Erstelle einen NetworkStream, um Daten zu senden und zu empfangen
-        NetworkStream stream = _client.GetStream();
 
+        _client = listener.AcceptTcpClient();
+        // Erstelle einen NetworkStream, um Daten zu senden und zu empfangen
+        _stream = _client.GetStream();
+
+
+        _stream.BeginRead(_messageBytes, _offset, _messageBytes.Length, new AsyncCallback(WaitForMessage), _stream);
+        _server.EndAcceptSocket(ar);
+    }
+
+    public void WaitForMessage(IAsyncResult ar)
+    {
+        if (ar.AsyncState == null) return;
+        NetworkStream streamObject = (NetworkStream) ar.AsyncState;
+        
         // Empfange die Nachricht vom Server
-        byte[] messageBytes = new byte[1024];
-        int bytesRead = stream.Read(messageBytes, 0, messageBytes.Length);
-        ReceivedMessage = Encoding.ASCII.GetString(messageBytes, 0, bytesRead);
+
+        int bytesRead = _stream.Read(_messageBytes, 0, _messageBytes.Length);
+        ReceivedMessage = Encoding.ASCII.GetString(_messageBytes, 0, bytesRead);
 
         Console.WriteLine("Nachricht vom Server empfangen: " + ReceivedMessage);
+        _client?.Close();
+        _stream?.Close();
     }
 
     ~ServerViewModel()
     {
         // Schlieﬂe die Verbindung zum Client
-        _client.Close();
+        _client?.Close();
         // Beende den Server
         _server.Stop();
     }
